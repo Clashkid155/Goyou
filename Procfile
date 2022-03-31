@@ -1,1 +1,1 @@
-worker: ./bin/Goyou
+worker: bin/Goyou
