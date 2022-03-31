@@ -91,10 +91,18 @@ func main() {
 	b.Handle(tb.OnCallback, func(c *tb.Callback) {
 		if len(query) != 0 {
 			b.Respond(c, &tb.CallbackResponse{})
-			m_id, _ := b.Edit(c.Message, "*Downloading*")
+			b.Delete(c.Message)
+			mId, err := b.Reply(c.Message.ReplyTo, "*Downloading*")
+			if err != nil {
+				log.Println(err)
+			}
+
 			item, _ := strconv.Atoi(c.Data)
 			filename := Download(query[item])
-			b.Edit(m_id, "*Uploading*")
+			mId2, err1 := b.Edit(mId, "*Uploading*")
+			if err1 != nil {
+				log.Println(err1.Error())
+			}
 			photo := &tb.Photo{File: tb.FromDisk(filename)}
 			filed := tb.Video{
 				File:      tb.FromDisk(filename),
@@ -103,15 +111,15 @@ func main() {
 				Caption:   query[item].title,
 				MIME:      query[item].stream.MimeType,
 			}
-			err1 := b.Notify(c.Message.Chat, tb.UploadingVideo)
-			if err1 != nil {
-				log.Println(err1.Error())
+			err2 := b.Notify(c.Message.Chat, tb.UploadingVideo)
+			if err2 != nil {
+				log.Println(err2.Error())
 				return
 			}
-
-			_, err2 := b.Send(c.Sender, &filed, tb.ModeHTML)
-			if err2 != nil {
-				log.Panic(err2.Error())
+			b.Delete(mId2)
+			_, err3 := b.Reply(c.Message.ReplyTo, &filed, tb.ModeHTML)
+			if err3 != nil {
+				log.Panic(err3.Error())
 				return
 			}
 
