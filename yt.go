@@ -61,7 +61,6 @@ func Query(s string) (youtubeDetails []Details) {
 }
 
 func Download(vid Details) string {
-
 	video := vid.video
 	quality := vid.quality
 	name := down.OutputDir + downloade(video, quality)

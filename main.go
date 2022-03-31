@@ -91,9 +91,10 @@ func main() {
 	b.Handle(tb.OnCallback, func(c *tb.Callback) {
 		if len(query) != 0 {
 			b.Respond(c, &tb.CallbackResponse{})
+			m_id, _ := b.Edit(c.Message, "*Downloading*")
 			item, _ := strconv.Atoi(c.Data)
 			filename := Download(query[item])
-			b.Reply(c.Message, "Downloaded", tb.ModeHTML)
+			b.Edit(m_id, "*Uploading*")
 			photo := &tb.Photo{File: tb.FromDisk(filename)}
 			filed := tb.Video{
 				File:      tb.FromDisk(filename),
