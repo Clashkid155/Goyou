@@ -28,8 +28,11 @@ func main() {
 	}
 	var query []Details
 
+	b.Handle("/help", func(m *tb.Message) {
+		b.Reply(m, "Nothing to show")
+	})
 	b.Handle("/start", func(m *tb.Message) {
-		b.Reply(m, fmt.Sprintf("*Welcome* %s to *Zaza*\n 1\\. /start : To start the bot\n 2\\. /help : Get infomation about bot\\.", m.Sender.Username))
+		b.Reply(m, fmt.Sprintf("Hello *%s*, welcome to *%s*\n 1\\. /start : To start the bot\n 2\\. /help : Get infomation about bot\\.", m.Sender.Username, b.Me.FirstName))
 
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
@@ -84,6 +87,9 @@ func main() {
 				fmt.Println(err2)
 				return
 			}
+			return
+		} else if len(strings.TrimSpace(m.Text)) == 3 {
+			b.Reply(m, "YouTube link not specified\\.\n*Usage:*\n\\-\\ /yt video link\\.")
 			return
 		}
 		b.Reply(m, "*Not a youtube link*")
