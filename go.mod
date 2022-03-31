@@ -1,7 +1,7 @@
 module TgBot
 
 go 1.17
-
+// +heroku goVersion go1.17
 require (
 	github.com/joho/godotenv v1.4.0
 	github.com/kkdai/youtube/v2 v2.7.10
