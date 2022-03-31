@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Goyou/Goyou"
 	"fmt"
 	"github.com/joho/godotenv"
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -17,7 +18,7 @@ func main() {
 	if errdot := godotenv.Load(); errdot != nil {
 		log.Fatal("Error loading .env file")
 	}
-	botToken := os.Getenv("botToken") //token["botToken"]
+	botToken := os.Getenv("bott") //token["botToken"]
 
 	b, err := tb.NewBot(tb.Settings{Token: botToken,
 		ParseMode: tb.ModeMarkdownV2, Poller: &tb.LongPoller{Timeout: 10 * time.Second}})
@@ -26,7 +27,7 @@ func main() {
 		log.Fatalln(err)
 		return
 	}
-	var query []Details
+	var query []Goyou.Details
 
 	b.Handle("/help", func(m *tb.Message) {
 		b.Reply(m, "Nothing to show")
@@ -47,7 +48,7 @@ func main() {
 	b.Handle("/yt", func(m *tb.Message) {
 		if strings.Contains(m.Text, "youtube") || strings.Contains(m.Text, "youtu") {
 			url := m.Text[4:]
-			query = Query(url)
+			query = Goyou.Query(url)
 			buttons := make([]tb.Row, len(query))
 			menu := &tb.ReplyMarkup{}
 
@@ -58,17 +59,17 @@ func main() {
 					if len(query) != i+1 {
 						var details = query[i+1]
 						btn = menu.Row(menu.Data(
-							fmt.Sprintf("%s, %s", video.quality, video.size),
-							video.quality+video.size, strconv.Itoa(i)),
+							fmt.Sprintf("%s, %s", video.Quality, video.Size),
+							video.Quality+video.Size, strconv.Itoa(i)),
 							menu.Data(
-								fmt.Sprintf("%s, %s", details.quality, details.size),
-								details.quality+details.size, strconv.Itoa(i+1)))
+								fmt.Sprintf("%s, %s", details.Quality, details.Size),
+								details.Quality+details.Size, strconv.Itoa(i+1)))
 
 					}
 				} else if len(query)%2 != 0 && i == (len(query)-1) {
 					btn = menu.Row(menu.Data(
-						fmt.Sprintf("%s, %s", video.quality, video.size),
-						video.quality+video.size, strconv.Itoa(i)))
+						fmt.Sprintf("%s, %s", video.Quality, video.Size),
+						video.Quality+video.Size, strconv.Itoa(i)))
 				}
 				buttons = append(buttons, btn)
 
@@ -81,7 +82,7 @@ func main() {
 			//tb.Btn{}
 			//menu.Inline(menu.Row(btn), menu.Row(btn2))
 			menu.Inline(buttons...)
-			photo := tb.Photo{File: tb.FromURL(query[1].thumb.URL), Width: 400, Height: 400}
+			photo := tb.Photo{File: tb.FromURL(query[1].Thumb.URL), Width: 400, Height: 400}
 			_, err2 := b.Reply(m, &photo, &tb.ReplyMarkup{InlineKeyboard: menu.InlineKeyboard})
 			if err2 != nil {
 				fmt.Println(err2)
@@ -104,7 +105,7 @@ func main() {
 			}
 
 			item, _ := strconv.Atoi(c.Data)
-			filename := Download(query[item])
+			filename := Goyou.Download(query[item])
 			mId2, err1 := b.Edit(mId, "*Uploading*")
 			if err1 != nil {
 				log.Println(err1.Error())
@@ -114,8 +115,8 @@ func main() {
 				File:      tb.FromDisk(filename),
 				Thumbnail: photo,
 				FileName:  filename,
-				Caption:   query[item].title,
-				MIME:      query[item].stream.MimeType,
+				Caption:   query[item].Title,
+				MIME:      query[item].Stream.MimeType,
 			}
 			err2 := b.Notify(c.Message.Chat, tb.UploadingVideo)
 			if err2 != nil {
