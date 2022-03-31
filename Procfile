@@ -1,1 +1,1 @@
-worker: tele
+worker: ./bin/Goyou
