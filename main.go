@@ -14,11 +14,10 @@ import (
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	//token, _ := godotenv.Read()
 	if errdot := godotenv.Load(); errdot != nil {
 		log.Fatal("Error loading .env file")
 	}
-	botToken := os.Getenv("bott") //token["botToken"]
+	botToken := os.Getenv("botToken") //token["botToken"]
 
 	b, err := tb.NewBot(tb.Settings{Token: botToken,
 		ParseMode: tb.ModeMarkdownV2, Poller: &tb.LongPoller{Timeout: 10 * time.Second}})
@@ -74,13 +73,6 @@ func main() {
 				buttons = append(buttons, btn)
 
 			}
-
-			//menu := &tb.ReplyMarkup{}
-			//btn := menu.Data("HEE", "154", url)
-			//btn2 := menu.Data("Nawa", "kkk", url)
-
-			//tb.Btn{}
-			//menu.Inline(menu.Row(btn), menu.Row(btn2))
 			menu.Inline(buttons...)
 			photo := tb.Photo{File: tb.FromURL(query[1].Thumb.URL), Width: 400, Height: 400}
 			_, err2 := b.Reply(m, &photo, &tb.ReplyMarkup{InlineKeyboard: menu.InlineKeyboard})
@@ -131,22 +123,8 @@ func main() {
 			}
 
 		}
-		//b.Respond(c, &tb.CallbackResponse{})
-		//b.Reply(c.Message, "This message is old. resend")
 	})
 	log.Println("Bot Started")
 	b.Start()
 
 }
-
-/*inlineKeys := [][]tb.InlineButton{{tb.InlineButton{ //https://github.com/tucnak/telebot/blob/v2.5.0/callbacks.go#L65
-	Unique: "foo_btnp",
-	Text:   "foo",
-	Data:   "foo_btn",
-}, tb.InlineButton{
-	Unique: "bar_btnp",
-	Text:   "btn",
-	Data:   "bar_btn",
-},
-}}
-*/
